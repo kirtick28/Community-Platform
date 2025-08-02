@@ -1,26 +1,24 @@
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
 
-// @desc    Create a comment on a post
+// @desc    Create a comment (on post or another comment)
 // @route   POST /api/comments/:postId
 // @access  Private
 const createComment = async (req, res) => {
   try {
-    const { postId } = req.params;
-    const { content } = req.body;
+    const { content, parentComment } = req.body;
 
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ msg: 'Post not found' });
-
-    const comment = await Comment.create({
-      post: postId,
-      author: req.user._id,
-      content
+    const newComment = await Comment.create({
+      post: req.params.postId,
+      content,
+      author: req.user.id,
+      parentComment: parentComment || null
     });
 
-    res.status(201).json(comment);
+    res.status(201).json(newComment);
   } catch (err) {
-    res.status(500).json({ msg: 'Server Error' });
+    console.error('Create Comment Error:', err.message);
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 
@@ -31,7 +29,7 @@ const getCommentsByPost = async (req, res) => {
   try {
     const { postId } = req.params;
 
-    const comments = await Comment.find({ post: postId })
+    const comments = await Comment.find({ post: postId, parentComment: null })
       .populate('author', 'name email')
       .sort({ createdAt: -1 });
 
@@ -68,6 +66,22 @@ const updateComment = async (req, res) => {
   }
 };
 
+// @desc    Get replies of a comment
+// @route   GET /api/comments/replies/:commentId
+// @access  Private
+const getReplies = async (req, res) => {
+  try {
+    const replies = await Comment.find({
+      parentComment: req.params.commentId
+    }).populate('author', 'name');
+
+    res.status(200).json(replies);
+  } catch (err) {
+    console.error('Get Replies Error:', err.message);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 // @desc    Delete a comment
 // @route   DELETE /api/comments/:commentId
 // @access  Private (Author only)
@@ -80,8 +94,18 @@ const deleteComment = async (req, res) => {
     if (!comment.author.equals(req.user._id))
       return res.status(403).json({ msg: 'Not authorized' });
 
+    const deleteReplies = async (parentId) => {
+      const replies = await Comment.find({ parentComment: parentId });
+      for (const reply of replies) {
+        await deleteReplies(reply._id);
+        await reply.deleteOne();
+      }
+    };
+
+    await deleteReplies(commentId);
     await comment.deleteOne();
-    res.status(200).json({ msg: 'Comment deleted' });
+
+    res.status(200).json({ msg: 'Comment and replies deleted' });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error' });
   }
@@ -90,6 +114,7 @@ const deleteComment = async (req, res) => {
 module.exports = {
   createComment,
   getCommentsByPost,
+  getReplies,
   updateComment,
   deleteComment
 };

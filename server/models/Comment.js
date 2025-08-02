@@ -7,6 +7,11 @@ const commentSchema = new mongoose.Schema(
       ref: 'Post',
       required: true
     },
+    parentComment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment',
+      default: null // null = top-level comment
+    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

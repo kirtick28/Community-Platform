@@ -4,6 +4,7 @@ const authenticate = require('../middleware/authenticate');
 const {
   createComment,
   getCommentsByPost,
+  getReplies,
   updateComment,
   deleteComment
 } = require('../controllers/commentController');
@@ -17,6 +18,11 @@ router.post('/:postId', authenticate, createComment);
 // @desc    Fetch comments for a post
 // @access  Private
 router.get('/:postId', authenticate, getCommentsByPost);
+
+// @desc    Get all direct replies to a specific comment
+// @route   GET /api/comments/replies/:commentId
+// @access  Private
+router.get('/replies/:commentId', authenticate, getReplies);
 
 // @route   PUT /api/comments/:commentId
 // @desc    Update a comment by ID
