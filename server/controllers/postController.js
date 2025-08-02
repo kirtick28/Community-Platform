@@ -27,10 +27,15 @@ const createPost = async (req, res) => {
 // @access  Private
 const getAllPosts = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const posts = await Post.find()
-      .sort({ createdAt: -1 }) // newest first
-      .populate('author', 'name bio') // include author name & bio
-      .exec();
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('author', 'name bio');
 
     res.status(200).json(posts);
   } catch (err) {
