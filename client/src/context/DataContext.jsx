@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from './AuthContext.jsx';
 
 const DataContext = createContext();
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.API_URL;
 
 export const useData = () => {
   const context = useContext(DataContext);
