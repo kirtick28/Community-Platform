@@ -6,9 +6,7 @@ const User = require('../models/User');
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching user profile' });
@@ -21,16 +19,14 @@ const getUserProfile = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching user profile' });
   }
 };
 
-// @desc    Search users by name or email
+// @desc    Search users by name, email, or username
 // @route   GET /api/user/search
 // @access  Private
 const searchUsers = async (req, res) => {
@@ -40,10 +36,11 @@ const searchUsers = async (req, res) => {
   try {
     const users = await User.find({
       $or: [
-        { name: { $regex: query, $options: 'i' } }, // case-insensitive
-        { email: { $regex: query, $options: 'i' } }
+        { name: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } },
+        { username: { $regex: query, $options: 'i' } }
       ]
-    }).select('-password'); // don't return passwords
+    }).select('-password');
 
     res.status(200).json(users);
   } catch (err) {
@@ -55,16 +52,22 @@ const searchUsers = async (req, res) => {
 // @route   PUT /api/user
 // @access  Private
 const updateUser = async (req, res) => {
-  const { name, bio } = req.body;
+  const { name, bio, username } = req.body;
 
-  if (!name && !bio) {
+  if (!name && !bio && !username) {
     return res.status(400).json({ message: 'Please provide data to update' });
   }
 
   try {
     const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (username && username !== user.username) {
+      const exists = await User.findOne({ username });
+      if (exists) {
+        return res.status(400).json({ message: 'Username already taken' });
+      }
+      user.username = username;
     }
 
     user.name = name || user.name;
@@ -77,6 +80,7 @@ const updateUser = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         bio: user.bio
       }
@@ -92,12 +96,9 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     await user.remove();
-
     res.status(200).json({ message: 'Profile deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting user profile' });

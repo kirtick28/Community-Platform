@@ -5,19 +5,23 @@ const { generateToken } = require('../utils/jwtUtils');
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
-  const { name, email, password, bio } = req.body;
+  const { name, username, email, password, bio } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !username || !email || !password) {
     return res.status(400).json({ message: 'Please fill all required fields' });
   }
 
-  const userExists = await User.findOne({ email });
-  if (userExists) {
-    return res.status(400).json({ message: 'User already exists' });
+  const emailExists = await User.findOne({ email });
+  if (emailExists) {
+    return res.status(400).json({ message: 'Email already registered' });
   }
 
-  const user = await User.create({ name, email, password, bio });
+  const usernameExists = await User.findOne({ username });
+  if (usernameExists) {
+    return res.status(400).json({ message: 'Username already taken' });
+  }
 
+  const user = await User.create({ name, username, email, password, bio });
   const token = generateToken(user);
 
   res.status(201).json({
@@ -25,6 +29,7 @@ const registerUser = async (req, res) => {
     user: {
       id: user._id,
       name: user.name,
+      username: user.username,
       email: user.email,
       bio: user.bio
     }
@@ -49,6 +54,7 @@ const loginUser = async (req, res) => {
     user: {
       id: user._id,
       name: user.name,
+      username: user.username,
       email: user.email,
       bio: user.bio
     }
