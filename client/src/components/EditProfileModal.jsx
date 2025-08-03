@@ -30,7 +30,6 @@ const EditProfileModal = ({ onClose }) => {
     confirmNewPassword.length > 0;
 
   const isFormValid = () => {
-    // Check if any field has changed
     const isChanged =
       hasNameChanged ||
       hasUsernameChanged ||
@@ -110,7 +109,6 @@ const EditProfileModal = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Modal Body */}
         <form onSubmit={handleSave} className="p-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
@@ -172,7 +170,6 @@ const EditProfileModal = ({ onClose }) => {
               </div>
             </div>
 
-            {/* Password Fields */}
             <div className="space-y-4 pt-4 border-t border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 Change Password
@@ -267,7 +264,6 @@ const EditProfileModal = ({ onClose }) => {
             </div>
           </div>
 
-          {/* Modal Footer */}
           <div className="flex justify-end space-x-4">
             <button
               type="button"

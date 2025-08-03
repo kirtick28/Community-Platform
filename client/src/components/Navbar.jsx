@@ -15,7 +15,6 @@ const Navbar = () => {
     { path: '/posts', icon: PlusSquare, label: 'Post Management' }
   ];
 
-  // Dynamically create the profile link
   const profilePath = user ? `/u/${user.username}` : '#';
 
   return (
@@ -70,7 +69,6 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Mobile Navigation */}
           <div className="md:hidden flex items-center space-x-4">
             {navItems.map(({ path, icon: Icon }) => (
               <Link

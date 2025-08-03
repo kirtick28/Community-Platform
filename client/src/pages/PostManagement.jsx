@@ -1,10 +1,9 @@
-// client/src/pages/PostManagement.jsx
 import { useState } from 'react';
 import { Plus, Edit3, Heart, MessageCircle } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import PostManagementCard from '../components/PostManagementCard.jsx';
 import CreatePostModal from '../components/CreatePostModal.jsx';
-import EditPostModal from '../components/EditPostModal.jsx'; // Import the new modal
+import EditPostModal from '../components/EditPostModal.jsx';
 import { useData } from '../context/DataContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -42,7 +41,6 @@ const PostManagement = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">My Posts</h1>
@@ -57,7 +55,6 @@ const PostManagement = () => {
           </button>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-fade-in">
           <StatCard
             title="Total Posts"
@@ -79,7 +76,6 @@ const PostManagement = () => {
           />
         </div>
 
-        {/* Posts List */}
         <div className="space-y-6">
           {userPosts.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
@@ -109,12 +105,10 @@ const PostManagement = () => {
         </div>
       </div>
 
-      {/* Create Post Modal */}
       {showCreateModal && (
         <CreatePostModal onClose={() => setShowCreateModal(false)} />
       )}
 
-      {/* Edit Post Modal */}
       {editingPost && (
         <EditPostModal
           post={editingPost}

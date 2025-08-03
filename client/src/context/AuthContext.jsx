@@ -95,9 +95,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       const updatedUser = response.data.user;
-      setUser(updatedUser); // updates context
+      setUser(updatedUser);
 
-      return updatedUser; // make sure to return only the user object
+      return updatedUser;
     } catch (error) {
       console.error('Update user error:', error);
       throw (

@@ -80,7 +80,6 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
             </div>
           )}
 
-          {/* Nested Replies */}
           {comment?.replies?.length > 0 && (
             <div className="mt-4 space-y-4">
               {comment.replies.map((reply) => (
@@ -123,7 +122,6 @@ const CommentSection = ({ post }) => {
         Comments ({comments.length})
       </h4>
 
-      {/* Add Comment Form */}
       {user && (
         <div className="mb-6">
           <div className="flex space-x-3">
@@ -152,7 +150,6 @@ const CommentSection = ({ post }) => {
         </div>
       )}
 
-      {/* Comments List */}
       <div className="space-y-4">
         {comments.map((comment) => (
           <CommentItem

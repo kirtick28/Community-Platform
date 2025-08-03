@@ -2,7 +2,6 @@ import { User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const UserCard = ({ user }) => {
-  // Function to truncate the bio if it's too long
   const truncateBio = (bio, limit = 100) => {
     if (!bio || bio.length <= limit) {
       return bio;
@@ -15,7 +14,6 @@ const UserCard = ({ user }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between transition-all duration-300 transform hover:scale-[1.01] hover:shadow-xl border border-gray-100">
       <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-        {/* User Profile Picture Placeholder */}
         <div className="w-16 h-16 bg-gradient-to-tr from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold border-2 border-white shadow-md">
           {user.name.charAt(0).toUpperCase()}
         </div>

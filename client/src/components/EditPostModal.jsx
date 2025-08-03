@@ -28,7 +28,6 @@ const EditPostModal = ({ post, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden transform animate-scale-up">
-        {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Edit Post</h2>
           <button
@@ -39,7 +38,6 @@ const EditPostModal = ({ post, onClose }) => {
           </button>
         </div>
 
-        {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-6">
             <label
@@ -73,7 +71,6 @@ const EditPostModal = ({ post, onClose }) => {
             </div>
           </div>
 
-          {/* Modal Footer */}
           <div className="flex justify-end space-x-4">
             <button
               type="button"

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
-import PostCard from '../components/PostCard.jsx'; // Use the new PostCard
+import PostCard from '../components/PostCard.jsx';
 import UserCard from '../components/UserCard.jsx';
 import { useData } from '../context/DataContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -17,14 +17,12 @@ const HomePage = () => {
   } = useData();
   const { user } = useAuth();
 
-  // Determine which posts to display: filtered posts if searchTerm is active, otherwise all posts.
   const displayPosts = searchTerm ? filteredPosts : posts;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-        {/* Header and Search Bar */}
         <div className="bg-white rounded-3xl shadow-xl p-6 mb-8 transform transition-all duration-300 hover:shadow-2xl hover:scale-[1.01]">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
             Hello, {user?.name || 'Welcome Back!'}
@@ -45,7 +43,6 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Conditional Rendering based on Search Term */}
         {loading ? (
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center animate-pulse flex items-center justify-center space-x-2">
             <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
@@ -54,9 +51,7 @@ const HomePage = () => {
             </h3>
           </div>
         ) : searchTerm ? (
-          // Display search results
           <div className="space-y-8">
-            {/* Users Section */}
             {filteredUsers.length > 0 && (
               <div className="animate-fade-in">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Users</h2>
@@ -68,7 +63,6 @@ const HomePage = () => {
               </div>
             )}
 
-            {/* Posts Section */}
             {filteredPosts.length > 0 && (
               <div className="animate-fade-in">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Posts</h2>
@@ -80,7 +74,6 @@ const HomePage = () => {
               </div>
             )}
 
-            {/* No Results Message */}
             {filteredUsers.length === 0 && filteredPosts.length === 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-12 text-center animate-fade-in">
                 <div className="text-gray-400 mb-4">
@@ -96,7 +89,6 @@ const HomePage = () => {
             )}
           </div>
         ) : (
-          // Display all posts if no search term is active
           <div className="space-y-6">
             {displayPosts.length === 0 ? (
               <div className="bg-white rounded-2xl shadow-lg p-12 text-center animate-fade-in">

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User, Edit, Plus, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import PostCard from '../components/PostCard.jsx';
-import EditProfileModal from '../components/EditProfileModal.jsx'; // Import the new modal
+import EditProfileModal from '../components/EditProfileModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useData } from '../context/DataContext.jsx';
 
@@ -16,7 +16,7 @@ const ProfilePage = () => {
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [profileLoading, setProfileLoading] = useState(true);
-  const [showEditModal, setShowEditModal] = useState(false); // New state for modal
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     if (!loading && allUsers.length > 0) {
@@ -39,11 +39,10 @@ const ProfilePage = () => {
     loggedInUser?.username.toLowerCase() === username.toLowerCase();
 
   const handleEditProfile = () => {
-    setShowEditModal(true); // Open the modal
+    setShowEditModal(true);
   };
 
   const handleFollow = () => {
-    // Add logic for following/unfollowing here
     console.log(`Follow user: ${username}`);
   };
 
@@ -78,9 +77,7 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Profile Header */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 animate-fade-in-down">
-          {/* Cover Image Placeholder */}
           <div className="h-48 bg-gradient-to-r from-purple-500 to-blue-500 relative">
             <div className="absolute -bottom-16 left-8 w-32 h-32 rounded-full bg-white p-2">
               <div className="w-full h-full rounded-full bg-gradient-to-tr from-purple-600 to-blue-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-white">
@@ -116,7 +113,6 @@ const ProfilePage = () => {
               </p>
             )}
 
-            {/* Profile Stats */}
             <div className="flex space-x-8 text-center">
               <div>
                 <p className="text-3xl font-bold text-gray-900">
@@ -128,7 +124,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* User's Posts */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             Posts by {profileUser.name}
@@ -155,7 +150,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Edit Profile Modal */}
       {isOwner && showEditModal && (
         <EditProfileModal onClose={() => setShowEditModal(false)} />
       )}

@@ -19,7 +19,6 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Redirect if the user is already logged in and the auth state is not loading
     if (!authLoading && user) {
       navigate('/home');
     }
@@ -60,7 +59,6 @@ const RegisterPage = () => {
     });
   };
 
-  // If still loading, don't show the form to prevent a flicker
   if (authLoading) {
     return null;
   }

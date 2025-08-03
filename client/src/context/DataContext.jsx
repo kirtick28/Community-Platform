@@ -168,7 +168,6 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  // New, separate filtering logic for users and posts
   const filteredUsers = allUsers.filter((u) =>
     u.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -178,9 +177,9 @@ export const DataProvider = ({ children }) => {
   );
 
   const value = {
-    posts: allPosts, // Keeping allPosts for general feed if no search term is active
-    filteredPosts, // New filtered array for search results
-    filteredUsers, // New filtered array for user results
+    posts: allPosts,
+    filteredPosts,
+    filteredUsers,
     allPosts,
     allUsers,
     searchTerm,

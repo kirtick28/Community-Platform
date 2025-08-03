@@ -1,5 +1,3 @@
-// client/src/pages/PageNotFound.jsx
-
 import { Link } from 'react-router-dom';
 import { Frown } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';

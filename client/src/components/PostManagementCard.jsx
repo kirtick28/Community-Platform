@@ -1,4 +1,3 @@
-// client/src/components/PostManagementCard.jsx
 import { useState } from 'react';
 import { Heart, MessageCircle, Clock, Trash2, Edit3 } from 'lucide-react'; // Import Edit3
 import CommentSection from './CommentSection.jsx';
@@ -35,7 +34,6 @@ const PostManagementCard = ({ post, onEdit }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100">
-      {/* Post Header */}
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -72,12 +70,10 @@ const PostManagementCard = ({ post, onEdit }) => {
         </div>
       </div>
 
-      {/* Post Content */}
       <div className="p-6">
         <p className="text-gray-800 leading-relaxed text-lg">{post?.content}</p>
       </div>
 
-      {/* Post Actions */}
       <div className="px-6 pb-6 border-t border-gray-100 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
@@ -104,7 +100,6 @@ const PostManagementCard = ({ post, onEdit }) => {
         </div>
       </div>
 
-      {/* Comments Section */}
       {showComments && (
         <CommentSection post={post} onClose={() => setShowComments(false)} />
       )}

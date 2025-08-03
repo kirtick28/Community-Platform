@@ -28,7 +28,6 @@ const PostCard = ({ post }) => {
 
   return (
     <div className="bg-white rounded-3xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-gray-100 animate-slide-in-up">
-      {/* Post Header */}
       <div className="p-6 flex items-center space-x-4">
         <div className="w-14 h-14 bg-gradient-to-tr from-purple-600 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-white shadow-md">
           <span className="text-white font-bold text-xl">
@@ -45,12 +44,10 @@ const PostCard = ({ post }) => {
         </div>
       </div>
 
-      {/* Post Content */}
       <div className="px-6 pb-4">
         <p className="text-gray-800 text-lg leading-relaxed">{post?.content}</p>
       </div>
 
-      {/* Post Actions & Stats */}
       <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
         <div className="flex items-center space-x-6">
           <button
@@ -82,8 +79,6 @@ const PostCard = ({ post }) => {
           <span>{formatDate(post?.createdAt)}</span>
         </div>
       </div>
-
-      {/* Comments Section */}
       {showComments && (
         <CommentSection post={post} onClose={() => setShowComments(false)} />
       )}
