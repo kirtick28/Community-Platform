@@ -1,58 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext.jsx';
+import { DataProvider } from './context/DataContext.jsx';
+import LandingPage from './pages/LandingPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import RegisterPage from './pages/RegisterPage.jsx';
+import HomePage from './pages/HomePage.jsx';
+import PostManagement from './pages/PostManagement.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import PageNotFound from './pages/PageNotFound.jsx';
+import './App.css';
 
-const App = () => {
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/test');
-        const data = await response.json();
-        setMessage(data.message);
-        setLoading(false);
-      } catch (error) {
-        setError('Failed to fetch data from backend');
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-gray-800 shadow-2xl rounded-xl p-8 max-w-md w-full border border-gray-700">
-        <h1 className="text-4xl font-bold text-white mb-6">
-          Welcome to My App
-        </h1>
-
-        <div className="bg-gray-700 rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-200 mb-3">
-            Backend Response:
-          </h2>
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-            </div>
-          ) : error ? (
-            <p className="text-red-400">{error}</p>
-          ) : (
-            <p className="text-indigo-300 text-lg">{message}</p>
-          )}
+    <AuthProvider>
+      <DataProvider>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/home"
+              element={
+                // <ProtectedRoute>
+                <HomePage />
+                // </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/posts"
+              element={
+                // <ProtectedRoute>
+                <PostManagement />
+                // </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                // <ProtectedRoute>
+                <ProfilePage />
+                // </ProtectedRoute>
+              }
+            />
+            <Route path="/*" element={<PageNotFound />}></Route>
+          </Routes>
         </div>
-
-        <p className="text-gray-400 mb-6">
-          This is a clean and simple page built with React and Tailwind CSS.
-        </p>
-
-        <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
-          Get Started
-        </button>
-      </div>
-    </div>
+      </DataProvider>
+    </AuthProvider>
   );
-};
+}
 
 export default App;
