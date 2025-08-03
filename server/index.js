@@ -15,7 +15,13 @@ const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://community-platform-rose.vercel.app',
+    credentials: true
+  })
+);
+
 app.use(express.json());
 app.use(morgan('dev'));
 
