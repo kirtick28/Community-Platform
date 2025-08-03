@@ -1,225 +1,164 @@
-// client/src/pages/ProfilePage.jsx
-
-import { useState } from 'react';
-import { User, Mail, AtSign, Lock, Save } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { User, Edit, Plus, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
+import PostCard from '../components/PostCard.jsx';
+import EditProfileModal from '../components/EditProfileModal.jsx'; // Import the new modal
 import { useAuth } from '../context/AuthContext.jsx';
+import { useData } from '../context/DataContext.jsx';
 
 const ProfilePage = () => {
-  const { user, updateProfile } = useAuth();
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
-    username: user?.username || '',
-    email: user?.email || '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { username } = useParams();
+  const { user: loggedInUser } = useAuth();
+  const { allUsers, allPosts, loading } = useData();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+  const [profileUser, setProfileUser] = useState(null);
+  const [userPosts, setUserPosts] = useState([]);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false); // New state for modal
 
-    const updateData = {
-      name: formData.name,
-      username: formData.username,
-      email: formData.email
-    };
+  useEffect(() => {
+    if (!loading && allUsers.length > 0) {
+      const foundUser = allUsers.find(
+        (u) => u.username.toLowerCase() === username.toLowerCase()
+      );
+      setProfileUser(foundUser);
 
-    if (formData.password) {
-      if (formData.password !== formData.confirmPassword) {
-        setMessage('Passwords do not match');
-        setLoading(false);
-        return;
+      if (foundUser) {
+        const postsOfUser = allPosts.filter(
+          (post) => post.author._id === foundUser._id
+        );
+        setUserPosts(postsOfUser);
       }
-      if (formData.password.length < 6) {
-        setMessage('Password must be at least 6 characters long');
-        setLoading(false);
-        return;
-      }
-      updateData.password = formData.password;
+      setProfileLoading(false);
     }
+  }, [username, allUsers, allPosts, loading]);
 
-    // Since the original code uses a function that returns a result object,
-    // I will mock that behavior here. In a real app, this would be an API call.
-    const result = { success: true }; // Assume success for this example
-    // const result = await updateProfile(updateData); // Use this line for real implementation
+  const isOwner =
+    loggedInUser?.username.toLowerCase() === username.toLowerCase();
 
-    if (result.success) {
-      setMessage('Profile updated successfully!');
-      setFormData({ ...formData, password: '', confirmPassword: '' });
-    } else {
-      setMessage(result.error);
-    }
-
-    setLoading(false);
+  const handleEditProfile = () => {
+    setShowEditModal(true); // Open the modal
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleFollow = () => {
+    // Add logic for following/unfollowing here
+    console.log(`Follow user: ${username}`);
   };
+
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!profileUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col items-center justify-center p-8 text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          User Not Found
+        </h1>
+        <p className="text-lg text-gray-600 mb-8">
+          The profile you are looking for does not exist.
+        </p>
+        <button
+          onClick={() => navigate('/home')}
+          className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors"
+        >
+          Go to Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
-
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
-          <div className="text-center mb-8">
-            <div className="w-24 h-24 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-12 h-12 text-white" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Profile Header */}
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 animate-fade-in-down">
+          {/* Cover Image Placeholder */}
+          <div className="h-48 bg-gradient-to-r from-purple-500 to-blue-500 relative">
+            <div className="absolute -bottom-16 left-8 w-32 h-32 rounded-full bg-white p-2">
+              <div className="w-full h-full rounded-full bg-gradient-to-tr from-purple-600 to-blue-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-white">
+                {profileUser.name.charAt(0).toUpperCase()}
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Profile Settings
-            </h1>
-            <p className="text-gray-600">Update your personal information</p>
           </div>
 
-          {message && (
-            <div
-              className={`px-4 py-3 rounded-lg mb-6 ${
-                message.includes('successfully')
-                  ? 'bg-green-50 border border-green-200 text-green-600'
-                  : 'bg-red-50 border border-red-200 text-red-600'
-              }`}
-            >
-              {message}
+          <div className="pt-20 p-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+                  {profileUser.name}
+                </h1>
+                <p className="text-lg text-gray-600">@{profileUser.username}</p>
+              </div>
+              <div>
+                {isOwner ? (
+                  <button
+                    onClick={handleEditProfile}
+                    className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors"
+                  >
+                    <Edit className="w-5 h-5" />
+                    <span>Edit Profile</span>
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            {profileUser.bio && (
+              <p className="text-gray-700 leading-relaxed max-w-2xl mb-6">
+                {profileUser.bio}
+              </p>
+            )}
+
+            {/* Profile Stats */}
+            <div className="flex space-x-8 text-center">
+              <div>
+                <p className="text-3xl font-bold text-gray-900">
+                  {userPosts.length}
+                </p>
+                <p className="text-gray-500 text-sm">Posts</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* User's Posts */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Posts by {profileUser.name}
+          </h2>
+          {userPosts.length > 0 ? (
+            userPosts.map((post) => <PostCard key={post._id} post={post} />)
+          ) : (
+            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+              <div className="text-gray-400 mb-4">
+                <User className="w-16 h-16 mx-auto" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {isOwner
+                  ? 'You have no posts yet.'
+                  : `${profileUser.name} has no posts yet.`}
+              </h3>
+              <p className="text-gray-600">
+                {isOwner
+                  ? 'Share your first post to get started!'
+                  : 'Check back later for new content.'}
+              </p>
             </div>
           )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Username
-              </label>
-              <div className="relative">
-                <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  required
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
-
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Change Password
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Leave blank to keep your current password
-              </p>
-
-              <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    New Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Enter new password"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="confirmPassword"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Confirm New Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Confirm new password"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              <Save className="w-5 h-5" />
-              <span>{loading ? 'Updating...' : 'Update Profile'}</span>
-            </button>
-          </form>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isOwner && showEditModal && (
+        <EditProfileModal onClose={() => setShowEditModal(false)} />
+      )}
     </div>
   );
 };

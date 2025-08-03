@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+
 const AuthContext = createContext();
+
+const API_URL = 'http://localhost:5000/api';
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -14,79 +18,94 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchUserProfile(token);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (user) {
-      const userWithoutPassword = { ...user };
-      delete userWithoutPassword.password;
-      setUser(userWithoutPassword);
-      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-      return { success: true };
+  const fetchUserProfile = async (token) => {
+    try {
+      const response = await axios.get(`${API_URL}/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setUser(response.data);
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      localStorage.removeItem('token');
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-
-    return { success: false, error: 'Invalid credentials' };
   };
 
-  const register = (userData) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-    if (users.find((u) => u.email === userData.email)) {
-      return { success: false, error: 'Email already exists' };
+  const login = async (loginData) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/login`, loginData);
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setUser(user);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Login failed'
+      };
     }
+  };
 
-    if (users.find((u) => u.username === userData.username)) {
-      return { success: false, error: 'Username already taken' };
+  const register = async (userData) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/register`, userData);
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setUser(user);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Registration failed'
+      };
     }
-
-    const newUser = {
-      id: Date.now().toString(),
-      ...userData,
-      createdAt: new Date().toISOString()
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    const userWithoutPassword = { ...newUser };
-    delete userWithoutPassword.password;
-    setUser(userWithoutPassword);
-    localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-
-    return { success: true };
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     setUser(null);
-    localStorage.removeItem('currentUser');
   };
 
-  const updateProfile = (updatedData) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u) => u.id === user.id);
+  const updateUser = async (updatedData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found');
 
-    if (userIndex !== -1) {
-      users[userIndex] = { ...users[userIndex], ...updatedData };
-      localStorage.setItem('users', JSON.stringify(users));
+      const response = await axios.put(`${API_URL}/user`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
-      const updatedUser = { ...users[userIndex] };
-      delete updatedUser.password;
-      setUser(updatedUser);
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      return { success: true };
+      if (!response.data || !response.data.user) {
+        throw new Error('Invalid server response');
+      }
+
+      const updatedUser = response.data.user;
+      setUser(updatedUser); // updates context
+
+      return updatedUser; // make sure to return only the user object
+    } catch (error) {
+      console.error('Update user error:', error);
+      throw (
+        error.response?.data || {
+          message: error.message || 'Something went wrong'
+        }
+      );
     }
-
-    return { success: false, error: 'User not found' };
   };
 
   const value = {
@@ -94,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    updateProfile,
+    updateUser,
     loading
   };
 

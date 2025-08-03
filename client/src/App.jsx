@@ -23,25 +23,25 @@ function App() {
             <Route
               path="/home"
               element={
-                // <ProtectedRoute>
-                <HomePage />
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/posts"
               element={
-                // <ProtectedRoute>
-                <PostManagement />
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <PostManagement />
+                </ProtectedRoute>
               }
             />
             <Route
-              path="/profile"
+              path="/u/:username"
               element={
-                // <ProtectedRoute>
-                <ProfilePage />
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
               }
             />
             <Route path="/*" element={<PageNotFound />}></Route>

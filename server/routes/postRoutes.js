@@ -5,7 +5,8 @@ const {
   createPost,
   getAllPosts,
   getPostById,
-  deletePost
+  deletePost,
+  updatePost
 } = require('../controllers/postController');
 
 // @route   POST /api/posts
@@ -22,6 +23,11 @@ router.get('/', authenticate, getAllPosts);
 // @desc    Get a single post by ID
 // @access  Private
 router.get('/:postId', authenticate, getPostById);
+
+// @route   PUT /api/posts/:postId
+// @desc    Update a single post by ID
+// @access  Private
+router.put('/:postId', authenticate, updatePost);
 
 // @route   DELETE /api/posts/:postId
 // @desc    Delete a post (only by author)

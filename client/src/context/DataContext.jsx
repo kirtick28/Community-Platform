@@ -1,168 +1,198 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { useAuth } from './AuthContext.jsx'
+import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { useAuth } from './AuthContext.jsx';
 
-const DataContext = createContext()
+const DataContext = createContext();
+const API_URL = 'http://localhost:5000/api';
 
 export const useData = () => {
-  const context = useContext(DataContext)
+  const context = useContext(DataContext);
   if (!context) {
-    throw new Error('useData must be used within DataProvider')
+    throw new Error('useData must be used within DataProvider');
   }
-  return context
-}
+  return context;
+};
 
 export const DataProvider = ({ children }) => {
-  const { user } = useAuth()
-  const [posts, setPosts] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
+  const { user, loading: authLoading } = useAuth();
+  const [allPosts, setAllPosts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await axios.get(`${API_URL}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setAllUsers(response.data);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
+      setError('Failed to fetch users.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await axios.get(`${API_URL}/posts`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setAllPosts(response.data);
+    } catch (err) {
+      console.error('Failed to fetch posts:', err);
+      setError('Failed to fetch posts.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const savedPosts = localStorage.getItem('posts')
-    if (savedPosts) {
-      setPosts(JSON.parse(savedPosts))
-    } else {
-      // Initialize with sample data
-      const samplePosts = [
+    if (!authLoading && user) {
+      fetchPosts();
+      fetchUsers();
+    } else if (!authLoading && !user) {
+      setLoading(false);
+      setAllUsers([]);
+      setAllPosts([]);
+    }
+  }, [user, authLoading]);
+
+  const createPost = async (content) => {
+    if (!user) return { success: false, error: 'Not authenticated' };
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${API_URL}/posts`,
+        { content },
         {
-          id: '1',
-          userId: 'sample1',
-          username: 'john_doe',
-          name: 'John Doe',
-          content: 'Just launched my new project! Excited to share it with everyone. Building in public has been an amazing journey.',
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          likes: ['sample2', 'sample3'],
-          comments: [
-            {
-              id: '1',
-              userId: 'sample2',
-              username: 'jane_smith',
-              name: 'Jane Smith',
-              content: 'Congratulations! Looks amazing!',
-              createdAt: new Date(Date.now() - 43200000).toISOString(),
-              replies: []
-            }
-          ]
-        },
-        {
-          id: '2',
-          userId: 'sample2',
-          username: 'jane_smith',
-          name: 'Jane Smith',
-          content: 'Beautiful sunset today! Sometimes we need to pause and appreciate the simple things in life.',
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-          likes: ['sample1'],
-          comments: []
-        }
-      ]
-      setPosts(samplePosts)
-      localStorage.setItem('posts', JSON.stringify(samplePosts))
-    }
-  }, [])
-
-  const createPost = (content) => {
-    if (!user) return { success: false, error: 'Not authenticated' }
-
-    const newPost = {
-      id: Date.now().toString(),
-      userId: user.id,
-      username: user.username,
-      name: user.name,
-      content,
-      createdAt: new Date().toISOString(),
-      likes: [],
-      comments: []
-    }
-
-    const updatedPosts = [newPost, ...posts]
-    setPosts(updatedPosts)
-    localStorage.setItem('posts', JSON.stringify(updatedPosts))
-    return { success: true }
-  }
-
-  const deletePost = (postId) => {
-    const updatedPosts = posts.filter(post => post.id !== postId)
-    setPosts(updatedPosts)
-    localStorage.setItem('posts', JSON.stringify(updatedPosts))
-  }
-
-  const toggleLike = (postId) => {
-    if (!user) return
-
-    const updatedPosts = posts.map(post => {
-      if (post.id === postId) {
-        const likes = post.likes.includes(user.id)
-          ? post.likes.filter(id => id !== user.id)
-          : [...post.likes, user.id]
-        return { ...post, likes }
-      }
-      return post
-    })
-
-    setPosts(updatedPosts)
-    localStorage.setItem('posts', JSON.stringify(updatedPosts))
-  }
-
-  const addComment = (postId, content, parentCommentId = null) => {
-    if (!user) return
-
-    const newComment = {
-      id: Date.now().toString(),
-      userId: user.id,
-      username: user.username,
-      name: user.name,
-      content,
-      createdAt: new Date().toISOString(),
-      replies: []
-    }
-
-    const updatedPosts = posts.map(post => {
-      if (post.id === postId) {
-        if (parentCommentId) {
-          // Add reply to existing comment
-          const updateCommentsRecursively = (comments) => {
-            return comments.map(comment => {
-              if (comment.id === parentCommentId) {
-                return { ...comment, replies: [...comment.replies, newComment] }
-              }
-              if (comment.replies.length > 0) {
-                return { ...comment, replies: updateCommentsRecursively(comment.replies) }
-              }
-              return comment
-            })
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-          return { ...post, comments: updateCommentsRecursively(post.comments) }
-        } else {
-          // Add new top-level comment
-          return { ...post, comments: [...post.comments, newComment] }
         }
-      }
-      return post
-    })
+      );
+      await fetchPosts();
+      return { success: true };
+    } catch (err) {
+      console.error('Error creating post:', err);
+      return {
+        success: false,
+        error: err.response?.data?.message || 'Failed to create post'
+      };
+    }
+  };
 
-    setPosts(updatedPosts)
-    localStorage.setItem('posts', JSON.stringify(updatedPosts))
-  }
+  const updatePost = async (postId, newContent) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${API_URL}/posts/${postId}`,
+        { content: newContent },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      await fetchPosts();
+    } catch (err) {
+      console.error('Error updating post:', err);
+    }
+  };
 
-  const filteredPosts = posts.filter(post =>
-    post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.username.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const deletePost = async (postId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API_URL}/posts/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      await fetchPosts();
+    } catch (err) {
+      console.error('Error deleting post:', err);
+    }
+  };
+
+  const toggleLike = async (postId) => {
+    if (!user) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${API_URL}/likes/${postId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      await fetchPosts();
+    } catch (err) {
+      console.error('Error toggling like:', err);
+    }
+  };
+
+  const addComment = async (postId, content, parentCommentId = null) => {
+    if (!user) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${API_URL}/comments/${postId}`,
+        { content, parentComment: parentCommentId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      await fetchPosts();
+    } catch (err) {
+      console.error('Error adding comment:', err);
+    }
+  };
+
+  // New, separate filtering logic for users and posts
+  const filteredUsers = allUsers.filter((u) =>
+    u.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredPosts = allPosts.filter((p) =>
+    p.content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const value = {
-    posts: filteredPosts,
-    allPosts: posts,
+    posts: allPosts, // Keeping allPosts for general feed if no search term is active
+    filteredPosts, // New filtered array for search results
+    filteredUsers, // New filtered array for user results
+    allPosts,
+    allUsers,
     searchTerm,
+    loading,
     setSearchTerm,
     createPost,
     deletePost,
     toggleLike,
-    addComment
-  }
+    addComment,
+    setAllUsers,
+    updatePost
+  };
 
-  return (
-    <DataContext.Provider value={value}>
-      {children}
-    </DataContext.Provider>
-  )
-}
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
+};

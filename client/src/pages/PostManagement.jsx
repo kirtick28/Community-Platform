@@ -1,10 +1,10 @@
 // client/src/pages/PostManagement.jsx
-
 import { useState } from 'react';
-import { Plus, Edit3, Trash2, Heart, MessageCircle } from 'lucide-react';
+import { Plus, Edit3, Heart, MessageCircle } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
-import PostCard from '../components/PostCard.jsx';
+import PostManagementCard from '../components/PostManagementCard.jsx';
 import CreatePostModal from '../components/CreatePostModal.jsx';
+import EditPostModal from '../components/EditPostModal.jsx'; // Import the new modal
 import { useData } from '../context/DataContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -24,10 +24,11 @@ const StatCard = ({ title, value, icon, iconBg, iconColor }) => (
 
 const PostManagement = () => {
   const { user } = useAuth();
-  const { allPosts, deletePost } = useData();
+  const { allPosts } = useData();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingPost, setEditingPost] = useState(null); // New state for editing
 
-  const userPosts = allPosts.filter((post) => post.userId === user?.id);
+  const userPosts = allPosts.filter((post) => post.author._id === user?._id);
   const totalLikes = userPosts.reduce(
     (total, post) => total + post.likes.length,
     0
@@ -36,12 +37,6 @@ const PostManagement = () => {
     (total, post) => total + post.comments.length,
     0
   );
-
-  const handleDeletePost = (postId) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      deletePost(postId);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -106,16 +101,8 @@ const PostManagement = () => {
             </div>
           ) : (
             userPosts.map((post) => (
-              <div key={post.id} className="relative group animate-slide-in">
-                <PostCard post={post} showManagement={true} />
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button
-                    onClick={() => handleDeletePost(post.id)}
-                    className="bg-white text-red-600 p-2 rounded-lg shadow-md hover:bg-red-100 transition-colors duration-200"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+              <div key={post._id} className="relative group animate-slide-in">
+                <PostManagementCard post={post} onEdit={setEditingPost} />
               </div>
             ))
           )}
@@ -125,6 +112,14 @@ const PostManagement = () => {
       {/* Create Post Modal */}
       {showCreateModal && (
         <CreatePostModal onClose={() => setShowCreateModal(false)} />
+      )}
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+        />
       )}
     </div>
   );

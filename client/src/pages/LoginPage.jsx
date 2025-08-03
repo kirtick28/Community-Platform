@@ -1,40 +1,54 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const LoginPage = () => {
-  const navigate = useNavigate()
-  const { login } = useAuth()
+  const navigate = useNavigate();
+  const { login, user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
+    loginIdentifier: '',
     password: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/home');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    const result = login(formData.email, formData.password)
-    
+    const isEmail = formData.loginIdentifier.includes('@');
+    const loginData = isEmail
+      ? { email: formData.loginIdentifier, password: formData.password }
+      : { username: formData.loginIdentifier, password: formData.password };
+
+    const result = await login(loginData);
+
     if (result.success) {
-      navigate('/home')
+      navigate('/home');
     } else {
-      setError(result.error)
+      setError(result.error);
     }
-    
-    setLoading(false)
-  }
+
+    setLoading(false);
+  };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
-    })
+    });
+  };
+  if (authLoading) {
+    return null;
   }
 
   return (
@@ -42,10 +56,15 @@ const LoginPage = () => {
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <Link to="/" className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <Link
+              to="/"
+              className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
+            >
               SocialHub
             </Link>
-            <h2 className="mt-4 text-2xl font-semibold text-gray-900">Welcome back</h2>
+            <h2 className="mt-4 text-2xl font-semibold text-gray-900">
+              Welcome back
+            </h2>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
@@ -57,26 +76,32 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+              <label
+                htmlFor="loginIdentifier"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email or Username
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id="loginIdentifier"
+                  name="loginIdentifier"
+                  type="text"
                   required
-                  value={formData.email}
+                  value={formData.loginIdentifier}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter your email"
+                  placeholder="Enter your email or username"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -96,7 +121,11 @@ const LoginPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -113,7 +142,10 @@ const LoginPage = () => {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/register" className="text-purple-600 hover:text-purple-700 font-semibold">
+              <Link
+                to="/register"
+                className="text-purple-600 hover:text-purple-700 font-semibold"
+              >
                 Sign up
               </Link>
             </p>
@@ -121,7 +153,7 @@ const LoginPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

@@ -1,7 +1,17 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight, Users, MessageCircle, Heart, Search } from 'lucide-react'
+import { Link } from 'react-router-dom';
+import {
+  ArrowRight,
+  Users,
+  MessageCircle,
+  Heart,
+  Search,
+  Home
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const LandingPage = () => {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -12,18 +22,30 @@ const LandingPage = () => {
               SocialHub
             </div>
             <div className="flex items-center space-x-4">
-              <Link
-                to="/login"
-                className="text-gray-600 hover:text-purple-600 font-medium transition-colors duration-200"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-              >
-                Get Started
-              </Link>
+              {!user ? (
+                <>
+                  <Link
+                    to="/login"
+                    className="text-gray-600 hover:text-purple-600 font-medium transition-colors duration-200"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  to="/home"
+                  className="flex items-center space-x-1 text-purple-600 font-medium hover:underline"
+                >
+                  <Home className="w-5 h-5" />
+                  <span>Go to Home</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -40,24 +62,36 @@ const LandingPage = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Join our vibrant community where ideas come to life. Share your thoughts, 
-              connect with like-minded individuals, and be part of meaningful conversations 
-              that matter.
+              Join our vibrant community where ideas come to life. Share your
+              thoughts, connect with like-minded individuals, and be part of
+              meaningful conversations that matter.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/register"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-              >
-                <span>Join SocialHub</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/login"
-                className="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-600 hover:text-white transition-all duration-300"
-              >
-                Sign In
-              </Link>
+              {!user ? (
+                <>
+                  <Link
+                    to="/register"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                  >
+                    <span>Join SocialHub</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-600 hover:text-white transition-all duration-300"
+                  >
+                    Sign In
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  to="/home"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                >
+                  <span>Go to Home</span>
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -71,7 +105,8 @@ const LandingPage = () => {
               Why Choose SocialHub?
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Experience social networking like never before with our innovative features
+              Experience social networking like never before with our innovative
+              features
             </p>
           </div>
 
@@ -80,22 +115,26 @@ const LandingPage = () => {
               {
                 icon: Users,
                 title: 'Connect & Share',
-                description: 'Build meaningful connections with people who share your interests and passions.'
+                description:
+                  'Build meaningful connections with people who share your interests and passions.'
               },
               {
                 icon: MessageCircle,
                 title: 'Rich Conversations',
-                description: 'Engage in deep discussions with nested comments and real-time interactions.'
+                description:
+                  'Engage in deep discussions with nested comments and real-time interactions.'
               },
               {
                 icon: Heart,
                 title: 'Show Appreciation',
-                description: 'Express your thoughts with likes and reactions to support your community.'
+                description:
+                  'Express your thoughts with likes and reactions to support your community.'
               },
               {
                 icon: Search,
                 title: 'Discover Content',
-                description: 'Find exactly what you\'re looking for with our powerful search capabilities.'
+                description:
+                  "Find exactly what you're looking for with our powerful search capabilities."
               }
             ].map((feature, index) => (
               <div
@@ -105,8 +144,12 @@ const LandingPage = () => {
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
@@ -122,13 +165,23 @@ const LandingPage = () => {
           <p className="text-xl text-purple-100 mb-8">
             Start your journey today and become part of something bigger.
           </p>
-          <Link
-            to="/register"
-            className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
-          >
-            <span>Get Started Now</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          {!user ? (
+            <Link
+              to="/register"
+              className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
+            >
+              <span>Get Started Now</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          ) : (
+            <Link
+              to="/home"
+              className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
+            >
+              <span>Go to Home</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          )}
         </div>
       </section>
 
@@ -144,7 +197,7 @@ const LandingPage = () => {
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 // @desc    Get user profile
 // @route   GET /api/user/profile
@@ -6,7 +7,9 @@ const User = require('../models/User');
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching user profile' });
@@ -19,32 +22,24 @@ const getUserProfile = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching user profile' });
   }
 };
 
-// @desc    Search users by name, email, or username
-// @route   GET /api/user/search
-// @access  Private
-const searchUsers = async (req, res) => {
-  const query = req.query.query;
-  if (!query) return res.status(400).json({ message: 'Query is required' });
-
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private (or Public if you removed auth)
+const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({
-      $or: [
-        { name: { $regex: query, $options: 'i' } },
-        { email: { $regex: query, $options: 'i' } },
-        { username: { $regex: query, $options: 'i' } }
-      ]
-    }).select('-password');
-
+    const users = await User.find().select('-password'); // exclude password
     res.status(200).json(users);
   } catch (err) {
-    res.status(500).json({ message: 'Error searching users' });
+    res.status(500).json({ message: 'Failed to fetch users' });
   }
 };
 
@@ -52,27 +47,51 @@ const searchUsers = async (req, res) => {
 // @route   PUT /api/user
 // @access  Private
 const updateUser = async (req, res) => {
-  const { name, bio, username } = req.body;
-
-  if (!name && !bio && !username) {
+  const { name, username, email, bio, oldPassword, newPassword } = req.body;
+  console.log(req.body);
+  if (!name && !username && !email && !bio && !newPassword) {
     return res.status(400).json({ message: 'Please provide data to update' });
   }
 
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if (name) user.name = name;
 
-    if (username && username !== user.username) {
-      const exists = await User.findOne({ username });
-      if (exists) {
+    if (username) {
+      const usernameExists = await User.findOne({ username });
+      if (
+        usernameExists &&
+        usernameExists._id.toString() !== user._id.toString()
+      ) {
         return res.status(400).json({ message: 'Username already taken' });
       }
       user.username = username;
     }
+    if (email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists && emailExists._id.toString() !== user._id.toString()) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
+      user.email = email;
+    }
+    if (bio) user.bio = bio;
+    if (newPassword) {
+      if (!oldPassword) {
+        return res
+          .status(400)
+          .json({ message: 'Old password is required to set new password' });
+      }
 
-    user.name = name || user.name;
-    user.bio = bio || user.bio;
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Old password is incorrect' });
+      }
 
+      user.password = newPassword; // Will be hashed via pre-save hook
+    }
     await user.save();
 
     res.status(200).json({
@@ -96,9 +115,12 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     await user.remove();
+
     res.status(200).json({ message: 'Profile deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting user profile' });
@@ -108,7 +130,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
   getUserProfile,
   getUserById,
-  searchUsers,
+  getAllUsers,
   updateUser,
   deleteUser
 };

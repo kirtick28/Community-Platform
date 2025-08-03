@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, AtSign, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -17,6 +17,13 @@ const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Redirect if the user is already logged in and the auth state is not loading
+    if (!authLoading && user) {
+      navigate('/home');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +42,7 @@ const RegisterPage = () => {
       return;
     }
 
-    const result = register(formData);
+    const result = await register(formData);
 
     if (result.success) {
       navigate('/home');
@@ -52,6 +59,11 @@ const RegisterPage = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  // If still loading, don't show the form to prevent a flicker
+  if (authLoading) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">

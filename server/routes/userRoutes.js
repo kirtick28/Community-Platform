@@ -4,7 +4,7 @@ const authenticate = require('../middleware/authenticate');
 const {
   getUserProfile,
   getUserById,
-  searchUsers,
+  getAllUsers,
   updateUser,
   deleteUser
 } = require('../controllers/userController');
@@ -19,10 +19,10 @@ router.get('/profile', authenticate, getUserProfile);
 // @access  Private (only logged-in users can view)
 router.get('/:userId', authenticate, getUserById);
 
-// @route   GET /api/user/search?query=xxx
-// @desc    Search users by name or email
+// @route   GET /api/user/
+// @desc    Get All users profiles
 // @access  Private
-router.get('/search', authenticate, searchUsers);
+router.get('/', authenticate, getAllUsers);
 
 // @route   PUT /api/user
 // @desc    Update logged-in user's profile

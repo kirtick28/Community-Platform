@@ -2,24 +2,20 @@ import { useState } from 'react';
 import { X, Send } from 'lucide-react';
 import { useData } from '../context/DataContext.jsx';
 
-const CreatePostModal = ({ onClose }) => {
-  const { createPost } = useData();
-  const [content, setContent] = useState('');
+const EditPostModal = ({ post, onClose }) => {
+  const { updatePost } = useData();
+  const [content, setContent] = useState(post.content);
   const [loading, setLoading] = useState(false);
   const maxCharacters = 500;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || content === post.content) return;
 
     setLoading(true);
-    const result = await createPost(content);
-
-    if (result.success) {
-      onClose();
-    }
-
+    await updatePost(post._id, content);
     setLoading(false);
+    onClose();
   };
 
   const handleContentChange = (e) => {
@@ -30,13 +26,11 @@ const CreatePostModal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden transform animate-scale-up">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Create New Post
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">Edit Post</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
@@ -52,7 +46,7 @@ const CreatePostModal = ({ onClose }) => {
               htmlFor="content"
               className="block text-sm font-medium text-gray-700 mb-3"
             >
-              What's on your mind?
+              Update your post
             </label>
             <textarea
               id="content"
@@ -91,12 +85,15 @@ const CreatePostModal = ({ onClose }) => {
             <button
               type="submit"
               disabled={
-                loading || !content.trim() || content.length > maxCharacters
+                loading ||
+                !content.trim() ||
+                content.length > maxCharacters ||
+                content === post.content
               }
               className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               <Send className="w-5 h-5" />
-              <span>{loading ? 'Posting...' : 'Post'}</span>
+              <span>{loading ? 'Saving...' : 'Save Changes'}</span>
             </button>
           </div>
         </form>
@@ -105,4 +102,4 @@ const CreatePostModal = ({ onClose }) => {
   );
 };
 
-export default CreatePostModal;
+export default EditPostModal;
