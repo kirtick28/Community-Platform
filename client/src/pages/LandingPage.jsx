@@ -8,16 +8,23 @@ import {
   Home
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useEffect } from 'react';
 
 const LandingPage = () => {
   const { user } = useAuth();
 
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(storedTheme);
+  }, []);
+
   return (
     <div className="min-h-screen">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
               SocialHub
             </div>
             <div className="flex items-center space-x-4">
@@ -25,7 +32,7 @@ const LandingPage = () => {
                 <>
                   <Link
                     to="/login"
-                    className="text-gray-600 hover:text-purple-600 font-medium transition-colors duration-200"
+                    className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors duration-200"
                   >
                     Login
                   </Link>
@@ -39,7 +46,7 @@ const LandingPage = () => {
               ) : (
                 <Link
                   to="/home"
-                  className="flex items-center space-x-1 text-purple-600 font-medium hover:underline"
+                  className="flex items-center space-x-1 text-purple-600 dark:text-purple-400 font-medium hover:underline"
                 >
                   <Home className="w-5 h-5" />
                   <span>Go to Home</span>
@@ -53,13 +60,13 @@ const LandingPage = () => {
       <section className="relative py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Connect, Share, and
-              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent block">
+              <span className="bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent block">
                 Inspire Together
               </span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto leading-relaxed">
               Join our vibrant community where ideas come to life. Share your
               thoughts, connect with like-minded individuals, and be part of
               meaningful conversations that matter.
@@ -76,7 +83,7 @@ const LandingPage = () => {
                   </Link>
                   <Link
                     to="/login"
-                    className="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-600 hover:text-white transition-all duration-300"
+                    className="border-2 border-purple-600 dark:border-purple-400 text-purple-600 dark:text-purple-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-600 dark:hover:bg-purple-500 hover:text-white dark:hover:text-white transition-all duration-300"
                   >
                     Sign In
                   </Link>
@@ -84,7 +91,7 @@ const LandingPage = () => {
               ) : (
                 <Link
                   to="/home"
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
                 >
                   <span>Go to Home</span>
                   <ArrowRight className="w-5 h-5" />
@@ -95,13 +102,13 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-white/50 backdrop-blur-sm">
+      <section className="py-20 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Why Choose SocialHub?
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Experience social networking like never before with our innovative
               features
             </p>
@@ -136,15 +143,15 @@ const LandingPage = () => {
             ].map((feature, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-xl dark:shadow-none transition-all duration-300 transform hover:-translate-y-2"
               >
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -181,7 +188,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-900 dark:bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
             SocialHub

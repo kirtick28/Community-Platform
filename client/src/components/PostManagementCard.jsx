@@ -33,8 +33,8 @@ const PostManagementCard = ({ post, onEdit }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100">
-      <div className="p-6 border-b border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-none overflow-hidden transition-all duration-300 hover:shadow-xl dark:hover:shadow-none border border-gray-100 dark:border-gray-700">
+      <div className="p-6 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
@@ -43,26 +43,26 @@ const PostManagementCard = ({ post, onEdit }) => {
               </span>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">
+              <h3 className="font-semibold text-gray-900 dark:text-white">
                 {post?.author?.name || 'Unknown'}
               </h3>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 @{post?.author?.username || 'unknown'}
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-2 text-gray-500 text-sm">
+          <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm">
             <Clock className="w-4 h-4" />
             <span>{formatDate(post?.createdAt)}</span>
             <button
               onClick={() => onEdit(post)}
-              className="text-gray-400 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200"
+              className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition-all duration-200"
             >
               <Edit3 className="w-4 h-4" />
             </button>
             <button
               onClick={handleDelete}
-              className="text-gray-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-all duration-200"
+              className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition-all duration-200"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -71,18 +71,20 @@ const PostManagementCard = ({ post, onEdit }) => {
       </div>
 
       <div className="p-6">
-        <p className="text-gray-800 leading-relaxed text-lg">{post?.content}</p>
+        <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg">
+          {post?.content}
+        </p>
       </div>
 
-      <div className="px-6 pb-6 border-t border-gray-100 pt-4">
+      <div className="px-6 pb-6 border-t border-gray-100 dark:border-gray-700 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <button
               onClick={handleLike}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
                 isLiked
-                  ? 'text-red-600 bg-red-50 hover:bg-red-100'
-                  : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                  ? 'text-red-600 bg-red-50 dark:bg-red-900 dark:text-red-300'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900'
               }`}
             >
               <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
@@ -91,7 +93,7 @@ const PostManagementCard = ({ post, onEdit }) => {
 
             <button
               onClick={() => setShowComments(!showComments)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 transition-all duration-200"
             >
               <MessageCircle className="w-5 h-5" />
               <span className="font-medium">{post?.comments?.length || 0}</span>

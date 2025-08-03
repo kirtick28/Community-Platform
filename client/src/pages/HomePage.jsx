@@ -20,33 +20,33 @@ const HomePage = () => {
   const displayPosts = searchTerm ? filteredPosts : posts;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <Navbar />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8 transform transition-all duration-300 hover:shadow-2xl hover:scale-[1.01]">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl dark:shadow-none p-6 mb-8 transform transition-all duration-300 hover:shadow-2xl hover:scale-[1.01]">
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">
             Hello, {user?.name || 'Welcome Back!'}
           </h1>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
             Discover what's new and connect with your community.
           </p>
 
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search posts, users, or content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-full focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-base shadow-sm"
+              className="w-full pl-12 pr-4 py-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-full focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-base shadow-sm"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center animate-pulse flex items-center justify-center space-x-2">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-none p-12 text-center animate-pulse flex items-center justify-center space-x-2">
             <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
-            <h3 className="text-xl font-semibold text-gray-900">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               Loading content...
             </h3>
           </div>
@@ -54,7 +54,9 @@ const HomePage = () => {
           <div className="space-y-8">
             {filteredUsers.length > 0 && (
               <div className="animate-fade-in">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Users</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                  Users
+                </h2>
                 <div className="space-y-4">
                   {filteredUsers.map((u) => (
                     <UserCard key={u._id} user={u} />
@@ -65,7 +67,9 @@ const HomePage = () => {
 
             {filteredPosts.length > 0 && (
               <div className="animate-fade-in">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Posts</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                  Posts
+                </h2>
                 <div className="space-y-4">
                   {filteredPosts.map((post) => (
                     <PostCard key={post._id} post={post} />
@@ -75,14 +79,14 @@ const HomePage = () => {
             )}
 
             {filteredUsers.length === 0 && filteredPosts.length === 0 && (
-              <div className="bg-white rounded-2xl shadow-lg p-12 text-center animate-fade-in">
-                <div className="text-gray-400 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-none p-12 text-center animate-fade-in">
+                <div className="text-gray-400 dark:text-gray-500 mb-4">
                   <Search className="w-16 h-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   No results found
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Try adjusting your search terms.
                 </p>
               </div>
@@ -91,14 +95,14 @@ const HomePage = () => {
         ) : (
           <div className="space-y-6">
             {displayPosts.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-lg p-12 text-center animate-fade-in">
-                <div className="text-gray-400 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-none p-12 text-center animate-fade-in">
+                <div className="text-gray-400 dark:text-gray-500 mb-4">
                   <Search className="w-16 h-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   No posts found
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Be the first to share something!
                 </p>
               </div>

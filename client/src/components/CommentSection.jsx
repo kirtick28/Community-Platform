@@ -28,7 +28,11 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
 
   return (
     <div
-      className={`${depth > 0 ? 'ml-8 border-l-2 border-gray-100 pl-4' : ''}`}
+      className={`${
+        depth > 0
+          ? 'ml-8 border-l-2 border-gray-100 dark:border-gray-700 pl-4'
+          : ''
+      }`}
     >
       <div className="flex space-x-3 mb-4">
         <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -37,22 +41,24 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
           </span>
         </div>
         <div className="flex-1">
-          <div className="bg-gray-50 rounded-xl p-3">
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
             <div className="flex items-center justify-between mb-1">
-              <h4 className="font-semibold text-gray-900 text-sm">
+              <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
                 {comment?.author?.name || 'Unknown'}
               </h4>
-              <span className="text-gray-500 text-xs">
+              <span className="text-gray-500 dark:text-gray-400 text-xs">
                 {formatDate(comment?.createdAt)}
               </span>
             </div>
-            <p className="text-gray-800 text-sm">{comment?.content}</p>
+            <p className="text-gray-800 dark:text-gray-200 text-sm">
+              {comment?.content}
+            </p>
           </div>
 
           <div className="flex items-center space-x-4 mt-2">
             <button
               onClick={() => setShowReplyForm(!showReplyForm)}
-              className="text-gray-500 hover:text-purple-600 text-sm font-medium flex items-center space-x-1 transition-colors duration-200"
+              className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 text-sm font-medium flex items-center space-x-1 transition-colors duration-200"
             >
               <Reply className="w-4 h-4" />
               <span>Reply</span>
@@ -67,7 +73,7 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
                   placeholder="Write a reply..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
                   onKeyDown={(e) => e.key === 'Enter' && handleReply()}
                 />
                 <button
@@ -117,8 +123,8 @@ const CommentSection = ({ post }) => {
   const comments = post?.comments || [];
 
   return (
-    <div className="border-t border-gray-100 p-6 bg-gray-50">
-      <h4 className="font-semibold text-gray-900 mb-4">
+    <div className="border-t border-gray-100 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-800">
+      <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
         Comments ({comments.length})
       </h4>
 
@@ -136,7 +142,7 @@ const CommentSection = ({ post }) => {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Write a comment..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
               />
               <button
@@ -162,8 +168,8 @@ const CommentSection = ({ post }) => {
 
       {comments.length === 0 && (
         <div className="text-center py-8">
-          <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">
+          <MessageCircle className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-500 dark:text-gray-400">
             No comments yet. Be the first to comment!
           </p>
         </div>

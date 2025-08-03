@@ -31,14 +31,14 @@ const CreatePostModal = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             Create New Post
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
           >
             <X className="w-6 h-6" />
           </button>
@@ -48,7 +48,7 @@ const CreatePostModal = ({ onClose }) => {
           <div className="mb-6">
             <label
               htmlFor="content"
-              className="block text-sm font-medium text-gray-700 mb-3"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
             >
               What's on your mind?
             </label>
@@ -58,18 +58,18 @@ const CreatePostModal = ({ onClose }) => {
               onChange={handleContentChange}
               placeholder="Share your thoughts with the community..."
               rows={6}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-lg leading-relaxed"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-lg leading-relaxed"
               required
             />
             <div className="flex justify-between items-center mt-2">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {content.length} characters
               </span>
               <span
                 className={`text-sm ${
                   content.length > maxCharacters
                     ? 'text-red-500'
-                    : 'text-gray-500'
+                    : 'text-gray-500 dark:text-gray-400'
                 }`}
               >
                 {maxCharacters - content.length} remaining
@@ -81,7 +81,7 @@ const CreatePostModal = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200"
+              className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
             >
               Cancel
             </button>

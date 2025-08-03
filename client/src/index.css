@@ -10,12 +10,16 @@
 
   color-scheme: light;
   color: #213547;
-  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root.dark {
+  color-scheme: dark;
+  color: #c4c4c4;
 }
 
 * {
@@ -26,6 +30,12 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* Added background gradients to the body for theme persistence on reload */
+  background: linear-gradient(to bottom right, #f1f5f9, #eff6ff);
+}
+
+.dark body {
+  background: linear-gradient(to bottom right, #1f2937, #111827);
 }
 
 /* Custom scrollbar */

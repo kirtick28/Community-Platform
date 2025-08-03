@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // darkmode: 'class',
-  content: [
-    './index.html',
-    './src/**/*.{js,jsx,ts,tsx}' // Ensures Tailwind scans all component files
-  ],
+  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {}
   },

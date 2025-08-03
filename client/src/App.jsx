@@ -15,7 +15,8 @@ function App() {
   return (
     <AuthProvider>
       <DataProvider>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        {/* Removed background classes from here to allow index.css to manage the background */}
+        <div className="min-h-screen bg-background dark:bg-dark-background">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
